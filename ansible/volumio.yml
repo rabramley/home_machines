@@ -1,0 +1,22 @@
+---
+
+- hosts: volumio-servers
+  tasks:
+  - name: Set hostname in /etc/host to {{ inventory_hostname }} from {{ ansible_hostname }}
+    become: true
+    replace: dest=/etc/hosts regexp='(\s+){{ ansible_hostname }}(\s+.*)?$' replace='\1{{ inventory_hostname }}\2' backup=yes
+  - name: Set hostname in /etc/host to {{ inventory_hostname }} from {{ ansible_hostname }}
+    become: true
+    replace: dest=/etc/hosts regexp='(\s+ip6-){{ ansible_hostname }}(\s+.*)?$' replace='\1{{ inventory_hostname }}\2' backup=yes
+  - name: Ensure hostname is set to {{ inventory_hostname }}
+    become: true
+    hostname: name="{{ inventory_hostname }}"
+  - name: Mount Music
+    become: true
+    mount: name=/mnt/NAS/Music src=//tplinkmodem.net/volume(sda1)/home/Multimedia/Music/FLAC fstype=cifs opts=guest,uid=1000,gid=1000,iocharset=utf8,ro state=mounted
+  - name: restart machine
+    shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+    async: 1
+    poll: 0
+    become: true
+    ignore_errors: true
