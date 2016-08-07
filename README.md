@@ -1,1 +1,4 @@
-# home_machines
+# Home Machines
+
+Home machine configuration
+
