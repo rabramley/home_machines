@@ -11,4 +11,6 @@ cp /vagrant/ssh.config /home/vagrant/.ssh/config
 
 ssh-keygen -f /home/vagrant/.ssh/id_rsa -t rsa -N ''
 sshpass -p 'volumio' ssh-copy-id -i /home/vagrant/.ssh/id_rsa.pub -o StrictHostKeyChecking=no volumio@192.168.1.203
+sshpass -p 'raspberry' ssh-copy-id -i /home/vagrant/.ssh/id_rsa.pub -o StrictHostKeyChecking=no pi@192.168.1.202
+sshpass -p 'hypriot' ssh-copy-id -i /home/vagrant/.ssh/id_rsa.pub -o StrictHostKeyChecking=no pirate@192.168.1.204
 
