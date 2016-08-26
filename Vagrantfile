@@ -11,13 +11,13 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
   end
 
-  config.vm.define "acs" do |x|
+  config.vm.define "dev" do |x|
     x.vm.box = "ubuntu/trusty64"
-    x.vm.hostname = "acs"
+    x.vm.hostname = "dev"
     x.vm.network "private_network", ip: "192.168.33.10"
     x.vm.synced_folder './ansible', '/home/vagrant/ansible', mount_options: ["dmode=775,fmode=664"]
     x.vm.provision "shell" do |s|
-      s.path = "acs_provision.sh"
+      s.path = "dev_provision.sh"
       s.privileged = false
     end
     x.vm.provision "shell" do |s|
