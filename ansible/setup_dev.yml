@@ -1,0 +1,38 @@
+---
+
+- hosts: dev
+  vars:
+    private_key_file: /home/vagrant/.ssh/id_rsa
+    public_key_file: /home/vagrant/.ssh/id_rsa.pub
+    ssh_known_hosts_command: "ssh-keyscan -T 10"
+    ssh_known_hosts_file: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
+    ssh_known_hosts: "{{ groups['servers'] }}"
+
+  tasks:
+  - include_vars: "secrets.yml"
+  - name: Ensure .ssh directory exists.
+    file: 
+      dest: "{{ private_key_file | dirname }}"
+      mode: 0700 
+      state: directory
+  - name: Install private ssh key
+    copy: 
+      content: "{{ private_ssh_key }}" 
+      dest: "{{ private_key_file }}"
+      mode: 0600
+  - name: Install public ssh key
+    copy: 
+      content: "{{ public_ssh_key }}" 
+      dest: "{{ public_key_file }}"
+      mode: 0600
+  - name: For each host, scan for its ssh public key
+    shell: "ssh-keyscan {{ item }},`getent hosts {{ item }} | cut -d' ' -f1`"
+    with_items: "{{ ssh_known_hosts }}"
+    register: ssh_known_host_results
+    ignore_errors: yes
+  - name: Add/update the public key in the '{{ ssh_known_hosts_file }}'
+    known_hosts:
+      name: "{{ item.item }}"
+      key: "{{ item.stdout }}"
+      path: "{{ ssh_known_hosts_file }}"
+    with_items: "{{ ssh_known_host_results.results }}"

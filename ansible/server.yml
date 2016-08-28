@@ -1,6 +1,6 @@
 ---
 
-- hosts: server
+- hosts: piserver
   tasks:
   - name: Ensure cache up to date
     become: true
@@ -10,10 +10,10 @@
     apt: name=dnsmasq state=present
   - name: Copy dnsmasq config
     become: true
-    copy: src=dnsmasq.conf dest=/etc/dnsmasq.conf owner=root group=root mode=0644
+    copy: src=files/dnsmasq.conf dest=/etc/dnsmasq.conf owner=root group=root mode=0644
   - name: Copy marsh.dr hosts
     become: true
-    copy: src=marsh.dr.hosts dest=/etc/marsh.dr.hosts owner=root group=root mode=0644
+    copy: src=files/marsh.dr.hosts dest=/etc/marsh.dr.hosts owner=root group=root mode=0644
   - name: Restart dnsmasq and ensure enabled
     become: true
     service: name=dnsmasq enabled=yes state=restarted

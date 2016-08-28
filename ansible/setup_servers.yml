@@ -1,0 +1,15 @@
+---
+
+- hosts: servers
+  tasks:
+  - include_vars: "secrets.yml"
+  - name: Change root password
+    become: true
+    user: name=root password="{{ root_password |password_hash('sha512') }}"
+  - name: Add Deploy User
+    become: true
+    user: name={{ deploy_username }} password={{ deploy_password |password_hash('sha512') }} shell=/bin/bash
+  - name: Add authorized keys for deploy user
+    become: true
+    authorized_key: user={{ deploy_username }}
+                    key="{{ lookup('file', '/home/vagrant/.ssh/id_rsa.pub') }}"

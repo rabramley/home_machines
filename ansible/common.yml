@@ -2,3 +2,13 @@
 
 - hosts: all
   tasks:
+  - name: Set hostname in /etc/host to {{ inventory_hostname }} from {{ ansible_hostname }}
+    become: true
+    replace: dest=/etc/hosts regexp='(\s+){{ ansible_hostname }}(\s+.*)?$' replace='\1{{ inventory_hostname }}\2' backup=yes
+  - name: Set hostname in /etc/host to {{ inventory_hostname }} from {{ ansible_hostname }}
+    become: true
+    replace: dest=/etc/hosts regexp='(\s+ip6-){{ ansible_hostname }}(\s+.*)?$' replace='\1{{ inventory_hostname }}\2' backup=yes
+  - name: Ensure hostname is set to {{ inventory_hostname }}
+    become: true
+    hostname: name="{{ inventory_hostname }}"
+

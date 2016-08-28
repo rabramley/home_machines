@@ -1,5 +1,12 @@
-kitchen ansible_host=192.168.1.203 ansible_user=volumio
-server ansible_host=192.168.1.204 ansible_user=pirate
+kitchen ansible_user=volumio
+piserver ansible_user=pirate
+pidev ansible_user=pi
+dev ansible_connection=local
 
 [volumio-servers]
+kitchen
+
+[servers]
+pidev
+piserver
 kitchen
