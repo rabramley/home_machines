@@ -1,12 +1,28 @@
-kitchen ansible_user=volumio
-piserver ansible_user=pirate
-pidev ansible_user=pi
+kitchen
+piserver
+pidev
 dev ansible_connection=local
 
-[volumio-servers]
+[new-volumio]
 kitchen
 
-[servers]
-pidev
+[new-volumio:vars]
+ansible_user=volumio
+ansible_become_pass=volumio
+
+[new-hypriot]
 piserver
-kitchen
+
+[new-hypriot:vars]
+ansible_user=pirate
+
+[new-raspbian]
+pidev
+
+[new-raspbian:vars]
+ansible_user=pi
+
+[new-servers:children]
+new-volumio
+new-hypriot
+new-raspbian

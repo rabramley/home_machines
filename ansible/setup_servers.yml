@@ -1,6 +1,6 @@
 ---
 
-- hosts: servers
+- hosts: new-servers
   tasks:
   - include_vars: "secrets.yml"
   - name: Change root password
@@ -13,3 +13,9 @@
     become: true
     authorized_key: user={{ deploy_username }}
                     key="{{ lookup('file', '/home/vagrant/.ssh/id_rsa.pub') }}"
+  - name: Add deploy user to sudoers
+    become: true
+    lineinfile: dest=/etc/sudoers
+                regexp="{{ deploy_username }} ALL"
+                line="{{ deploy_username }} ALL=(ALL) ALL"
+                state=present
