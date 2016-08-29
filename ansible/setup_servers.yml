@@ -1,6 +1,14 @@
 ---
 
 - hosts: new-servers
+  vars:
+    required_packages:
+    - ufw
+    - fail2ban
+    - unattended-upgrades
+    - apt-listchanges
+    - logwatch
+    - postfix
   tasks:
   - include_vars: "secrets.yml"
   - name: Change root password
@@ -19,3 +27,31 @@
                 regexp="{{ deploy_username }} ALL"
                 line="{{ deploy_username }} ALL=(ALL) ALL"
                 state=present
+  - name: Update APT package cache
+    become: true
+    apt: update_cache=yes cache_valid_time=3600
+  - name: Install required packages
+    become: true
+    apt: state=installed pkg={{ item }}
+    with_items: "{{ required_packages }}"
+  - name: Adjust APT update intervals
+    become: true
+    copy: src=files/apt_periodic dest=/etc/apt/apt.conf.d/10periodic
+  - name: Configure root email
+    become: true
+    copy: src=files/aliases dest=/etc/aliases
+  - name: Set up Postfix to relay mail
+    debconf: name=postfix
+    become: true
+             question='{{ item.question }}'
+             value='{{ item.value }}'
+             vtype='{{ item.vtype }}'
+    with_items:
+      - { question: 'postfix/mailname', value: '{{ ansible_fqdn }}', vtype: 'string' }
+      - { question: 'postfix/main_mailer_type', value: 'Internet Site', vtype: 'string' }
+  - name: Email log summary daily
+    become: true
+    lineinfile: dest=/etc/cron.daily/00logwatch
+                regexp="^/usr/sbin/logwatch"
+                line="/usr/sbin/logwatch --output mail --mailto root --detail high"
+                state=present create=yes
