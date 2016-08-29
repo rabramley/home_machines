@@ -55,3 +55,9 @@
                 regexp="^/usr/sbin/logwatch"
                 line="/usr/sbin/logwatch --output mail --mailto root --detail high"
                 state=present create=yes
+  - name: Setup ufw
+    become: true
+    ufw: state=enabled policy=deny
+  - name: Allow ssh traffic
+    become: true
+    ufw: rule=allow port=22 proto=tcp

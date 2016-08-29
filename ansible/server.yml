@@ -17,3 +17,12 @@
   - name: Restart dnsmasq and ensure enabled
     become: true
     service: name=dnsmasq enabled=yes state=restarted
+  - name: Allow UDP DNS traffic
+    become: true
+    ufw: rule=allow port=53 proto=udp
+  - name: Allow TCP DNS traffic
+    become: true
+    ufw: rule=allow port=53 proto=tcp
+  - name: Allow TCP HTTP traffic
+    become: true
+    ufw: rule=allow port=80 proto=tcp
